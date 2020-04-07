@@ -64,7 +64,7 @@ router.post('./:id/comments', (req, res) => {
         .catch(err => {
             res
                 .status(500)
-                .json({ error: "The post information could not be found."})
+                .json({ error: "The was an error while saving the comment to the database."})
         })
 })
 
@@ -81,6 +81,55 @@ router.get('/', (req,res) => {
                 errorMessage: 'The posts information could not be retrieved.'
             });
     });
+});
+
+// Read by ID
+
+router.get('/:id', (req, res) => {
+    const postId = req.params.id;
+    Posts
+        .findById(postId)
+        .first()
+        .then(post => {
+            if (!post) {
+                return res
+                    .status(404)
+                    .json({
+                        message: "The post with the specified ID does not exist."
+                });
+            } else {
+                res
+                    .status(200)
+                    .json(post);
+            }
+        })
+        .catch(err => {
+            res
+                .status(500)
+                .json({ error: 'The post information could not be retrieved.'})
+        });
+});
+
+// Read comment by ID
+router.get('/:id/comments', (req, res) => {
+    const postId = req.params.id;
+    Posts
+        .findPostComments(postId)
+        .then(post => {
+            if (post.length === 0){
+                console.log(post)
+                return res
+                    .status(404)
+                    .json({message: "The post with the specified ID does not exist."});
+            } else {
+                res.status(200).json(post);
+            }
+        })
+        .catch(err =>{
+            res
+                .status(500)
+                .json({error: "The comments information could not be retrieved."});
+        });
 });
 
 //Update
