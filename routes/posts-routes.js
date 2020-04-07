@@ -6,7 +6,7 @@ const router = require('express').Router();
 
 const Posts = require('../data/db');
 
-// Create
+// ===Create====
 
 router.post('/', (req,res) => {
     const newPost = req.body;
@@ -68,7 +68,8 @@ router.post('./:id/comments', (req, res) => {
         })
 })
 
-// Read
+// ===Read=== 
+
 router.get('/', (req,res) => {
     Posts.find()
     .then(posts => {
@@ -132,12 +133,59 @@ router.get('/:id/comments', (req, res) => {
         });
 });
 
-//Update
-router.put('/', (req,res) => {
-    // add code here
-})
+// ===Update===
+router.put('/:id', (req,res) => {
+    const postId = req.params.id;
+    const updatedPost = req.body;
+    const {title, contents} = updatedPost;
 
-//Delete
-router.delete('/', (req,res) => {
-    // add code here
-})
+    Posts
+        .update(postId, updatedPost)
+        .then(updated =>{
+            if(!updated){
+                res.status(404).json({
+                    message: "The post with the specified ID does not exist.", updated
+                });
+            } else {
+                if(!title || !contents){
+                    res.status(400).json({
+                        errorMessage: "Please provide title and contents for the post."
+                    });
+                } else {
+                    res.status(200).json({ message: "OK"});
+                }
+            }
+        })
+        .catch(err => {
+            res
+                .status(500)
+                .json({error: "The post information could not be modified."})
+        });s
+});
+
+
+// ===Delete===
+
+router.delete('/:id', (req,res) => {
+    const postId = req.params.id;
+    Posts
+        .remove(postId)
+        .then(post => {
+            if(!post){
+                res
+                    .status(404)
+                    .json({
+                        message: 'The post with the specified ID does not exist.'
+                    });
+            } else {
+                res.status(200).json({ message: 'Post deleted.'});
+            }
+        })
+        .catch(err => {
+            res.status(500).json({
+                error: 'The post could not be removed.'
+            });
+        });
+});
+
+module.exports = router;
