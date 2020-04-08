@@ -51,9 +51,8 @@ router.post("/:id/comments", (req, res) => {
               .json({ errorMessage: "Please provide text for the comment." });
           } else {
             Posts.insertComment(req.body);
-            return then(comment => {
-              res.status(201).json(comment);
-            });
+            res
+                .status(201).json({message: 'the comment was posted'})
           }
         }
       })
