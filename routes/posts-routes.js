@@ -33,40 +33,36 @@ router.post('/', (req,res) => {
 
 // Create Comment
 
-router.post('./:id/comments', (req, res) => {
+router.post("/:id/comments", (req, res) => {
     const postId = req.params.id;
     const { text } = req.body;
     Posts
-        .findById(postId)
-        .first()
-        .then(post => {
-            //if the post with the id is not found
-            if(!post){
-            return res
-                .status(404)
-                .json({ message: 'The post with the specified ID could not be found.'});
-            } else {
-                //if the post is missing the text property
-                if(!text) {
-                    res
-                        .status(400)
-                        .json({ errorMessage: 'Please provide text for the comment.'});
-                } else {
-                    //if the post comment information is valid
-                    posts.insertComment(req.body);
-                    return then(comment => {
-                        res.status(201).json(comment);
-                    });
-                }
-            }
-        })
-        //if there is an issue saving the post information
-        .catch(err => {
+      .findById(postId)
+      .first()
+      .then(post => {
+        if (!post) {
+          return res
+            .status(404)
+            .json({ message: "The post with the specified ID does not exist." });
+        } else {
+          if (!text) {
             res
-                .status(500)
-                .json({ error: "The was an error while saving the comment to the database."})
-        })
-})
+              .status(400)
+              .json({ errorMessage: "Please provide text for the comment." });
+          } else {
+            Posts.insertComment(req.body);
+            return then(comment => {
+              res.status(201).json(comment);
+            });
+          }
+        }
+      })
+      .catch(err => {
+        res
+          .status(500)
+          .json({ error: "The post information could not be retrieved." });
+      });
+  });
 
 // ===Read=== 
 
@@ -160,7 +156,7 @@ router.put('/:id', (req,res) => {
             res
                 .status(500)
                 .json({error: "The post information could not be modified."})
-        });s
+        });
 });
 
 
